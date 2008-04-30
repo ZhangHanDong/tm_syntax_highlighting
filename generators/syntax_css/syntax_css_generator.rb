@@ -2,12 +2,8 @@ class SyntaxCssGenerator < Rails::Generator::Base
   def manifest
     record do |m|
       theme = args[0]
+      copy_css_from_uv
       css_files = css_from_templates
-
-      if css_files.empty?
-        copy_css_from_uv
-        css_files = css_from_templates
-      end      
       
       if theme == "all"
         m.directory("public/stylesheets/syntax")      
@@ -28,6 +24,7 @@ class SyntaxCssGenerator < Rails::Generator::Base
           puts "Could not find theme named #{theme}."
         end
       end
+      delete_css_files_from_template
     end
   end
   
@@ -47,6 +44,12 @@ class SyntaxCssGenerator < Rails::Generator::Base
 
     Dir.glob(File.join(Uv.path, "render", "xhtml", "files", "css", "*.css")) do |css|
       FileUtils.cp(css, css_path)
+    end
+  end
+  
+  def delete_css_files_from_template
+    css_from_templates.each do |file|
+      FileUtils.rm(source_path("stylesheets/syntax/#{file}"))
     end
   end
   
