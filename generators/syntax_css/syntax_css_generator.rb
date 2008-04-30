@@ -58,5 +58,6 @@ class SyntaxCssGenerator < Rails::Generator::Base
     Dir.glob(File.join(source_path("stylesheets/syntax"), "*.css")) do |css|
       css << File.basename(css)
     end
+    css
   end
 end
