@@ -1,30 +1,34 @@
 class SyntaxCssGenerator < Rails::Generator::Base
   def manifest
     record do |m|
+      # This whole copy CSS files to the tamplates folder isn't very clean
+      # generator library doesn't let me specify an absolute path for m.file so this is a compromise
+      # FIXME: make this cleaner
       theme = args[0]
-      copy_css_from_uv
-      css_files = css_from_templates
+
+      themes = Uv.themes
       
       if theme == "all"
-        m.directory("public/stylesheets/syntax")      
-        css_files.each do |css|
-          m.file("stylesheets/syntax/#{css}", "public/stylesheets/syntax/#{css}")
+        m.directory("public/stylesheets/syntax")
+        copy_theme_from_uv(*themes)
+        themes.each do |css|
+          m.file("/#{css}.css", "public/stylesheets/syntax/#{css}.css")
         end
       elsif theme == "list"
-        puts css_files.collect{|f| File.basename(f, ".css")}.sort.join("\n")
+        puts themes.sort.join("\n")
       else
-        css = css_files.detect do |s|
-          s =~ /^#{theme}\.css$/
+        css = themes.detect do |s|
+          s.downcase.strip == theme.downcase.strip
         end
+        
         if css
           m.directory("public/stylesheets/syntax")
-          m.file("stylesheets/syntax/#{css}", "public/stylesheets/syntax/#{css}")
+          m.file("#{css}.css", "public/stylesheets/syntax/#{css}.css")
         else
           usage_message
           puts "Could not find theme named #{theme}."
         end
       end
-      delete_css_files_from_template
     end
   end
   
@@ -37,27 +41,9 @@ class SyntaxCssGenerator < Rails::Generator::Base
     puts "Usage: #{$0} syntax_css [all | list | theme_name]"
   end
   
-  def copy_css_from_uv
-    puts "Copying CSS files from Ultraviolet"
-    css_path = File.join(File.dirname(__FILE__), "templates", "stylesheets", "syntax")
-    FileUtils.mkdir_p(css_path)
-
-    Dir.glob(File.join(Uv.path, "render", "xhtml", "files", "css", "*.css")) do |css|
-      FileUtils.cp(css, css_path)
+  def copy_theme_from_uv(*args)
+    args.each do |theme|
+      FileUtils.cp(File.join(Uv.path, "render", "xhtml", "files", "css", "#{theme}.css"), source_path("/"))
     end
-  end
-  
-  def delete_css_files_from_template
-    css_from_templates.each do |file|
-      FileUtils.rm(source_path("stylesheets/syntax/#{file}"))
-    end
-  end
-  
-  def css_from_templates
-    css = []
-    Dir.glob(File.join(source_path("stylesheets/syntax"), "*.css")) do |css|
-      css << File.basename(css)
-    end
-    css
   end
 end
