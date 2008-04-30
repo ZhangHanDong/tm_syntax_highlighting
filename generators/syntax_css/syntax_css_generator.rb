@@ -2,15 +2,12 @@ class SyntaxCssGenerator < Rails::Generator::Base
   def manifest
     record do |m|
       theme = args[0]
-      css_files = []
-      Dir.glob(File.join(source_path("stylesheets/syntax"), "*.css")) do |css|
-        css_files << File.basename(css)
-      end
+      css_files = css_from_templates
 
       if css_files.empty?
         copy_css_from_uv
-      end
-      
+        css_files = css_from_templates
+      end      
       
       if theme == "all"
         m.directory("public/stylesheets/syntax")      
@@ -50,6 +47,13 @@ class SyntaxCssGenerator < Rails::Generator::Base
 
     Dir.glob(File.join(Uv.path, "render", "xhtml", "files", "css", "*.css")) do |css|
       FileUtils.cp(css, css_path)
+    end
+  end
+  
+  def css_from_templates
+    css = []
+    Dir.glob(File.join(source_path("stylesheets/syntax"), "*.css")) do |css|
+      css << File.basename(css)
     end
   end
 end
