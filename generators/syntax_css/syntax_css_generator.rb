@@ -6,6 +6,10 @@ class SyntaxCssGenerator < Rails::Generator::Base
       Dir.glob(File.join(source_path("stylesheets/syntax"), "*.css")) do |css|
         css_files << File.basename(css)
       end
+
+      if css_files.empty?
+        copy_css_from_uv
+      end
       
       
       if theme == "all"
@@ -37,5 +41,15 @@ class SyntaxCssGenerator < Rails::Generator::Base
   
   def usage_message
     puts "Usage: #{$0} syntax_css [all | list | theme_name]"
+  end
+  
+  def copy_css_from_uv
+    puts "Copying CSS files from Ultraviolet"
+    css_path = File.join(File.dirname(__FILE__), "templates", "stylesheets", "syntax")
+    FileUtils.mkdir_p(css_path)
+
+    Dir.glob(File.join(Uv.path, "render", "xhtml", "files", "css", "*.css")) do |css|
+      FileUtils.cp(css, css_path)
+    end
   end
 end
