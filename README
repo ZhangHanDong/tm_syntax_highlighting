@@ -16,6 +16,17 @@ which should install ultraviolet, textpow, and oniguruma.
 
 Lastly, in order for this plugin to properly copy the syntax CSS files from ultraviolet, ultraviolet must already be installed. In other words, you need to install ultraviolet before installing this plugin.
 
+The plugin comes with a generator for the stylesheets for the different themes.
+  
+  # to see a list of themes
+  $ script/generate syntax_css list
+  
+  # to copy all the themes to public/stylesheets/syntax
+  $ script/generate syntax_css all
+  
+  # to copy a single theme to public/stylesheets/syntax
+  $ script/generate syntax_css theme_name
+  
 Example
 =======
 
