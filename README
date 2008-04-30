@@ -27,6 +27,7 @@ code (helper method) usage
   code(some_ruby_code, :theme => "twilight", :lang => "ruby", :line_numbers => true)
   
 lang and line_numbers are optional. lang will default to plain_text and line_numbers will default to true.
+It is *HIGHLY* recommended that you fragment_cache or some other type of caching for code fragments (TextPow and/or Ultraviolet have some speed issues).
 
 theme can be an array, and one will be chosen at random.
 
